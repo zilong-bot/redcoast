@@ -990,3 +990,24 @@ func TestReceiverEmailAndProxyKinds(t *testing.T) {
 		t.Fatalf("clearing: %d %s", status, body)
 	}
 }
+
+// With only direct accounts no proxy login is in use: proxy_ref_options is an
+// empty list in dashboard.json, not null, which the page refuses.
+func TestProxyRefOptionsEmptyIsAList(t *testing.T) {
+	rows := []session.AccountRow{{Alias: "direct-a", Direct: true}}
+	for _, rs := range [][]session.AccountRow{nil, rows} {
+		got := proxyRefOptions(rs)
+		if got == nil {
+			t.Fatalf("proxyRefOptions(%d rows) = nil, want an empty list", len(rs))
+		}
+		b, err := json.Marshal(struct {
+			Options []proxyRefOption `json:"proxy_ref_options"`
+		}{got})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(b) != `{"proxy_ref_options":[]}` {
+			t.Fatalf("marshalled = %s", b)
+		}
+	}
+}

@@ -386,10 +386,12 @@ func (b *proxyBody) applyProxy(row *session.AccountRow) {
 // refPair is the proxy login of an account.
 type refPair struct{ Username, Password string }
 
-// proxyRefOptions returns the proxy logins accounts use now, each pair once, sorted.
+// proxyRefOptions returns the proxy logins accounts use now, each pair once, sorted;
+// an empty list, never nil, when none does (only direct accounts), since the
+// dashboard reads proxy_ref_options as a list and refuses null.
 func proxyRefOptions(rows []session.AccountRow) []proxyRefOption {
 	seen := map[refPair]bool{}
-	var out []proxyRefOption
+	out := []proxyRefOption{}
 	for _, row := range rows {
 		pair := refPair{row.UsernameRef, row.PasswordRef}
 		if row.Direct || pair.Username == "" || pair.Password == "" || seen[pair] {
