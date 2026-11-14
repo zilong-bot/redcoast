@@ -212,7 +212,10 @@ export function agyPace(
   now: Date,
 ): { elapsed: number; by: number } | null {
   const span = AGY_WINDOW_MS[b.window];
-  if (span === undefined || b.reset_time === undefined) return null;
+  // An unused limit has no window yet: Google starts it at the first use, so
+  // its reset stays a whole window away.
+  if (span === undefined || b.reset_time === undefined || used(b) <= 0)
+    return null;
   const left = Date.parse(b.reset_time) - now.getTime();
   if (left <= 0 || left > span) return null;
   const elapsed = 1 - left / span;

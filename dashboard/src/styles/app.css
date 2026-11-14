@@ -1634,13 +1634,12 @@ td.source {
 .big-card .quota-line {
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr);
-  align-items: start;
+  align-items: baseline;
   gap: var(--t-space-2);
 }
 .big-card .win-label {
   color: var(--t-text-muted);
   font-size: var(--t-text-sm);
-  line-height: 1.6;
 }
 @media (max-width: 800px) {
   .home-grid {

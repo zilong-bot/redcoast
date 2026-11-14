@@ -59,7 +59,11 @@ export function AgyMeter({
         {p === null ? null : (
           <div
             className="even"
-            style={{ left: `${(Math.min(p.elapsed, 1) * 100).toFixed(1)}%` }}
+            // Kept inside the track, so a mark near either end does not
+            // stick out past the bars of the rows above and below.
+            style={{
+              left: `clamp(calc(var(--t-height-meter) / 2), ${(Math.min(p.elapsed, 1) * 100).toFixed(1)}%, calc(100% - var(--t-height-meter) / 2))`,
+            }}
             title={`Even pace: ${formatPercent(p.elapsed)} of the window has passed`}
           />
         )}
