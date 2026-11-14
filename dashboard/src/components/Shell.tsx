@@ -32,7 +32,12 @@ import {
   type Route,
   type View,
 } from "../lib/route";
-import { roleName, type AgyMonitor, type FleetRoles } from "../lib/agy";
+import {
+  agyHealth,
+  roleName,
+  type AgyMonitor,
+  type FleetRoles,
+} from "../lib/agy";
 import { clientRows, healthState } from "../lib/stats";
 import type { Dashboard } from "../lib/types";
 import { PALETTES, type Palette, type Theme } from "../lib/useData";
@@ -174,6 +179,29 @@ function ProviderMenu({
   );
 }
 
+/**
+ * Antigravity's state, in the place and look of the gateway's provider
+ * under Redcoast: is the monitor reading its quota, and is any left.
+ */
+function AgyStatus({ m }: { m: AgyMonitor }) {
+  const health = agyHealth(m);
+  return (
+    <div className="provider">
+      <div
+        className="provider-button static"
+        title={m.health?.detail ?? m.error ?? undefined}
+      >
+        <Sparkles className="icon" aria-hidden="true" />
+        <span className="label">Antigravity</span>
+        <span className={`status s-${health.tone}`}>
+          <span className="dot" />
+          <span className="kind">{health.word}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function NavItem({
   view,
   current,
@@ -287,6 +315,7 @@ export function Sidebar({
         {agy?.configured !== true ? null : (
           <>
             <div className="nav-section">Antigravity</div>
+            <AgyStatus m={agy} />
             <NavItem view="agy" current={v} icon={Sparkles} onClick={onClose} />
             <NavItem
               view="agy-quota"

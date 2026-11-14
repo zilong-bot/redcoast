@@ -32,7 +32,7 @@ function toneOf(u: number): Tone {
 
 /**
  * One AGY limit: the used share as a bar with the even pace through the
- * window as a hollow mark (as the Claude windows have), then the reset, the
+ * window as an upright mark (as the Claude windows have), then the reset, the
  * pace and, at the last hour's rate, when it runs out.
  */
 export function AgyMeter({
@@ -301,7 +301,7 @@ export function AgyOverview({ m, now }: { m: AgyMonitor | null; now: Date }) {
       <AgyStrip m={m} now={now} />
       <Section
         title="Quota"
-        note="Used share of each limit; the hollow mark is an even pace through the window"
+        note="Used share of each limit; the upright mark is an even pace through the window"
       >
         <QuotaTable m={m} now={now} />
       </Section>

@@ -121,7 +121,7 @@ function AntigravityQuota({ m, now }: { m: AgyMonitor | null; now: Date }) {
 
 /**
  * Home: the whole setup at a glance. What the Slack bot answers on and what
- * the work runs on, then how much quota each backend has left; the hollow
+ * the work runs on, then how much quota each backend has left; the upright
  * mark on a bar is an even pace through its window.
  */
 export function Home({
@@ -166,7 +166,7 @@ export function Home({
       </div>
       <p className="small muted">
         Change the backend with the switch-runtime skill (ask in Slack), or on
-        the machine: <code>set-runtime.py claude|agy</code>. The hollow mark on
+        the machine: <code>set-runtime.py claude|agy</code>. The upright mark on
         a bar is an even pace through its window.
       </p>
     </>
