@@ -12,6 +12,7 @@ import {
   House,
   LayoutDashboard,
   List,
+  Menu,
   Settings,
   Monitor as MonitorIcon,
   Moon,
@@ -20,6 +21,7 @@ import {
   Sun,
   Terminal,
   User,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -54,7 +56,15 @@ function host(url: string): string {
  * dashboards when the gateway lists any. Choosing one opens that
  * dashboard on the same view: each provider is its own process.
  */
-function ProviderMenu({ data, route }: { data: Dashboard; route: Route }) {
+function ProviderMenu({
+  data,
+  route,
+  onClose,
+}: {
+  data: Dashboard;
+  route: Route;
+  onClose?: (() => void) | undefined;
+}) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -127,6 +137,7 @@ function ProviderMenu({ data, route }: { data: Dashboard; route: Route }) {
             href={routeHref(route)}
             onClick={() => {
               setOpen(false);
+              onClose?.();
             }}
           >
             <ProviderIcon provider={provider} />
@@ -168,16 +179,19 @@ function NavItem({
   current,
   icon: Icon,
   count,
+  onClick,
 }: {
   view: View;
   current: View;
   icon: LucideIcon;
   count?: number;
+  onClick?: (() => void) | undefined;
 }) {
   return (
     <a
       href={routeHref({ view })}
       aria-current={view === current ? "page" : undefined}
+      onClick={onClick}
     >
       <Icon className="icon" aria-hidden="true" />
       {VIEW_NAMES[view]}
@@ -198,10 +212,14 @@ export function Sidebar({
   data,
   agy = null,
   route,
+  open = false,
+  onClose,
 }: {
   data: Dashboard | null;
   agy?: AgyMonitor | null;
   route: Route;
+  open?: boolean;
+  onClose?: (() => void) | undefined;
 }) {
   // A client's page is one of Clients; an account's, and adding one, of Manage.
   const v =
@@ -211,24 +229,49 @@ export function Sidebar({
         ? "manage"
         : route.view;
   return (
-    <aside className="sidebar" aria-label="Navigation">
-      <div className="brand">redcoast</div>
+    <aside
+      id="sidebar-nav"
+      className={open ? "sidebar open" : "sidebar"}
+      aria-label="Navigation"
+    >
+      <div className="sidebar-head">
+        <div className="brand">redcoast</div>
+        {onClose === undefined ? null : (
+          <button
+            type="button"
+            className="nav-close"
+            aria-label="Close navigation"
+            onClick={onClose}
+          >
+            <X className="icon" aria-hidden="true" />
+          </button>
+        )}
+      </div>
       <nav className="nav" aria-label="Pages">
-        <NavItem view="home" current={v} icon={House} />
+        <NavItem view="home" current={v} icon={House} onClick={onClose} />
         <div className="nav-section">Redcoast</div>
-        {data === null ? null : <ProviderMenu data={data} route={route} />}
+        {data === null ? null : (
+          <ProviderMenu data={data} route={route} onClose={onClose} />
+        )}
         <div className="nav-group">Traffic</div>
-        <NavItem view="overview" current={v} icon={LayoutDashboard} />
+        <NavItem
+          view="overview"
+          current={v}
+          icon={LayoutDashboard}
+          onClick={onClose}
+        />
         <NavItem
           view="clients"
           current={v}
           icon={Terminal}
+          onClick={onClose}
           {...(data === null ? {} : { count: clientCount(data) })}
         />
         <NavItem
           view="sessions"
           current={v}
           icon={List}
+          onClick={onClose}
           {...(data === null ? {} : { count: data.sessions.length })}
         />
         <div className="nav-group">Upstream</div>
@@ -236,27 +279,34 @@ export function Sidebar({
           view="accounts"
           current={v}
           icon={User}
+          onClick={onClose}
           {...(data === null ? {} : { count: data.accounts.length })}
         />
-        <NavItem view="manage" current={v} icon={Settings} />
-        <NavItem view="exits" current={v} icon={Globe} />
+        <NavItem view="manage" current={v} icon={Settings} onClick={onClose} />
+        <NavItem view="exits" current={v} icon={Globe} onClick={onClose} />
         {agy?.configured !== true ? null : (
           <>
             <div className="nav-section">Antigravity</div>
-            <NavItem view="agy" current={v} icon={Sparkles} />
-            <NavItem view="agy-quota" current={v} icon={Gauge} />
+            <NavItem view="agy" current={v} icon={Sparkles} onClick={onClose} />
+            <NavItem
+              view="agy-quota"
+              current={v}
+              icon={Gauge}
+              onClick={onClose}
+            />
             <div className="nav-section">Fleet</div>
             <NavItem
               view="agents"
               current={v}
               icon={Bot}
+              onClick={onClose}
               count={agy.agents.filter((a) => a.state !== "ended").length}
             />
           </>
         )}
       </nav>
       <nav className="nav nav-bottom" aria-label="Gateway">
-        <NavItem view="monitor" current={v} icon={Activity} />
+        <NavItem view="monitor" current={v} icon={Activity} onClick={onClose} />
       </nav>
     </aside>
   );
@@ -309,6 +359,8 @@ export function Topbar({
   palette,
   setPalette,
   reload,
+  navOpen = false,
+  onToggleNav,
 }: {
   data: Dashboard | null;
   agy?: AgyMonitor | null;
@@ -320,9 +372,25 @@ export function Topbar({
   palette: Palette;
   setPalette: (p: Palette) => void;
   reload: () => void;
+  navOpen?: boolean;
+  onToggleNav?: (() => void) | undefined;
 }) {
   return (
     <header className="topbar">
+      <button
+        type="button"
+        className="nav-toggle"
+        aria-label="Navigation"
+        aria-expanded={navOpen}
+        aria-controls="sidebar-nav"
+        onClick={onToggleNav}
+      >
+        {navOpen ? (
+          <X className="icon" aria-hidden="true" />
+        ) : (
+          <Menu className="icon" aria-hidden="true" />
+        )}
+      </button>
       <ol className="crumbs" aria-label="Breadcrumb">
         <li>{root}</li>
         {crumbs.map((c, i) => (

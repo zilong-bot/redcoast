@@ -118,7 +118,7 @@ function QuotaTable({ m, now }: { m: AgyMonitor; now: Date }) {
     );
   return (
     <div className="table-wrap scroll">
-      <table className="quota-table">
+      <table className="quota-table mobile-stack">
         <thead>
           <tr>
             <th scope="col">Model group</th>
@@ -133,11 +133,11 @@ function QuotaTable({ m, now }: { m: AgyMonitor; now: Date }) {
         <tbody>
           {groups.map((g) => (
             <tr key={g.name}>
-              <td className="two wrap">
+              <td className="two wrap" data-label="Model group">
                 <div className="client-name">{g.name}</div>
               </td>
               {(["5h", "weekly"] as const).map((w) => (
-                <td className="two" key={w}>
+                <td className="two" key={w} data-label={windowLabel(w)}>
                   <AgyMeter
                     bucket={g.buckets.find((b) => b.window === w)}
                     monitor={m}

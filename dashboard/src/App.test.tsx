@@ -2,8 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { sampleDashboard } from "../fixtures/sample.ts";
 import { Page } from "./App";
-import { Sidebar } from "./components/Shell";
+import { Sidebar, Topbar } from "./components/Shell";
 import { HourBars, HourLines } from "./components/charts";
+import type { AgyMonitor } from "./lib/agy";
 import {
   formatCount,
   formatMs,
@@ -631,4 +632,257 @@ it("offers the quota refresh where the accounts' quota is, only when the gateway
     expect(button(withState(null), view)).toBeUndefined();
     expect(button(withState(undefined), view)).toBeUndefined();
   }
+});
+
+const sampleAgy: AgyMonitor = {
+  configured: true,
+  updated_at: "2026-10-07T12:19:00Z",
+  collected_at: "2026-10-07T12:19:00Z",
+  agy_version: "2.0.0",
+  runtime: "agy",
+  roles: {
+    chat: { runtime: "agy", model: "Gemini 4 Carbon (High)" },
+    lead: { runtime: "claude", model: "claude-sample-large" },
+    worker: { runtime: "agy", model: "Gemini 4 Carbon (High)" },
+  },
+  health: {
+    state: "ok",
+    checked_at: "2026-10-07T12:19:00Z",
+    last_ok_at: "2026-10-07T12:19:00Z",
+  },
+  quota: {
+    read_at: "2026-10-07T12:19:00Z",
+    groups: [
+      {
+        name: "Gemini 4 Carbon",
+        buckets: [
+          {
+            id: "carbon-5h",
+            name: "Gemini 4 Carbon",
+            window: "5h",
+            remaining_fraction: 0.42,
+            reset_time: "2026-10-07T14:50:00Z",
+          },
+          {
+            id: "carbon-weekly",
+            name: "Gemini 4 Carbon",
+            window: "weekly",
+            remaining_fraction: 0.74,
+            reset_time: "2026-10-11T12:20:00Z",
+          },
+        ],
+      },
+      {
+        name: "Gemini 3.8 Flash",
+        buckets: [
+          {
+            id: "flash-5h",
+            name: "Gemini 3.8 Flash",
+            window: "5h",
+            remaining_fraction: 1,
+            reset_time: "2026-10-07T17:20:00Z",
+          },
+          {
+            id: "flash-weekly",
+            name: "Gemini 3.8 Flash",
+            window: "weekly",
+            remaining_fraction: 1,
+            reset_time: "2026-10-14T12:20:00Z",
+          },
+        ],
+      },
+    ],
+  },
+  history: [
+    {
+      at: "2026-10-07T11:20:00Z",
+      remaining: {
+        "carbon-5h": 0.72,
+        "carbon-weekly": 0.78,
+        "flash-5h": 1,
+        "flash-weekly": 1,
+      },
+    },
+    {
+      at: "2026-10-07T12:19:00Z",
+      remaining: {
+        "carbon-5h": 0.42,
+        "carbon-weekly": 0.74,
+        "flash-5h": 1,
+        "flash-weekly": 1,
+      },
+    },
+  ],
+  agents: [
+    {
+      name: "sample-mobile-layout-worker",
+      role: "worker",
+      job: "sample-mobile-layout",
+      parent: "sample-mobile-layout-lead",
+      kind: "agy",
+      model: "Gemini 4 Carbon (High)",
+      state: "active",
+      status: "working",
+      started_at: "2026-10-07T11:55:00Z",
+    },
+    {
+      name: "thread-sample-0001",
+      role: "thread",
+      thread: "C0000000001/1700000000.000001",
+      kind: "claude",
+      model: "claude-sample-large",
+      state: "ended",
+      started_at: "2026-10-07T10:10:00Z",
+      ended_at: "2026-10-07T10:22:00Z",
+    },
+  ],
+};
+
+it("wires the mobile navigation drawer between Topbar and Sidebar", () => {
+  const closedBar = renderToStaticMarkup(
+    <Topbar
+      data={data}
+      agy={sampleAgy}
+      root="Home"
+      crumbs={[]}
+      now={now}
+      theme="system"
+      setTheme={noop}
+      palette="paper"
+      setPalette={noop}
+      reload={noop}
+      navOpen={false}
+      onToggleNav={noop}
+    />,
+  );
+  expect(closedBar).toContain('class="nav-toggle"');
+  expect(closedBar).toContain('aria-label="Navigation"');
+  expect(closedBar).toContain('aria-expanded="false"');
+  expect(closedBar).toContain('aria-controls="sidebar-nav"');
+  expect(closedBar).toContain("Gemini 4 Carbon (High)");
+
+  const openBar = renderToStaticMarkup(
+    <Topbar
+      data={data}
+      agy={sampleAgy}
+      root="Home"
+      crumbs={[]}
+      now={now}
+      theme="system"
+      setTheme={noop}
+      palette="paper"
+      setPalette={noop}
+      reload={noop}
+      navOpen
+      onToggleNav={noop}
+    />,
+  );
+  expect(openBar).toContain('aria-expanded="true"');
+
+  const closedSidebar = renderToStaticMarkup(
+    <Sidebar data={data} agy={sampleAgy} route={{ view: "home" }} />,
+  );
+  expect(closedSidebar).toContain('id="sidebar-nav"');
+  expect(closedSidebar).toContain('class="sidebar"');
+  expect(closedSidebar).not.toContain('class="nav-close"');
+
+  const openSidebar = renderToStaticMarkup(
+    <Sidebar
+      data={data}
+      agy={sampleAgy}
+      route={{ view: "home" }}
+      open
+      onClose={noop}
+    />,
+  );
+  expect(openSidebar).toContain('class="sidebar open"');
+  expect(openSidebar).toContain('class="nav-close"');
+  expect(openSidebar).toContain('aria-label="Close navigation"');
+});
+
+it("keeps desktop layout rules intact and adds narrow-viewport breakpoints", () => {
+  expect(rule(appCss, ".sidebar")).toContain("width: var(--t-width-sidebar);");
+  expect(rule(appCss, ".sidebar")).toContain("overflow-y: auto;");
+  expect(rule(appCss, ".main")).toContain(
+    "margin-left: var(--t-width-sidebar);",
+  );
+  expect(rule(appCss, ".topbar")).toContain("height: var(--t-height-bar);");
+  expect(rule(appCss, ".red-row")).toContain(
+    "grid-template-columns: 1fr var(--t-width-figures);",
+  );
+  expect(appCss).toContain("@media (max-width: 900px)");
+  expect(appCss).toContain("@media (max-width: 640px)");
+  expect(appCss).toContain(".sidebar.open");
+  expect(appCss).toContain(".mobile-stack");
+  expect(appCss).toContain(".accounts-stack");
+  expect(appCss).toContain(".agents-stack");
+});
+
+it("renders Home, Antigravity and Fleet with pace marks and mobile table labels", () => {
+  const homeHtml = renderToStaticMarkup(
+    <Page
+      data={data}
+      agy={sampleAgy}
+      now={now}
+      route={{ view: "home" }}
+      reload={noop}
+    />,
+  );
+  expect(homeHtml).toContain("Antigravity · Gemini 4 Carbon (High)");
+  expect(homeHtml).toContain(
+    "Leads on Claude Code · claude-sample-large, workers on Antigravity · Gemini 4 Carbon (High)",
+  );
+  expect(homeHtml).toContain('class="even"');
+  expect(homeHtml).toContain('class="even idle"');
+  expect(homeHtml).toContain("runs out in");
+
+  const agyHtml = renderToStaticMarkup(
+    <Page
+      data={data}
+      agy={sampleAgy}
+      now={now}
+      route={{ view: "agy" }}
+      reload={noop}
+    />,
+  );
+  expect(agyHtml).toContain('class="quota-table mobile-stack"');
+  expect(agyHtml).toContain('data-label="Model group"');
+  expect(agyHtml).toContain('data-label="5 h window"');
+  expect(agyHtml).toContain('data-label="7 d window"');
+
+  const quotaHtml = renderToStaticMarkup(
+    <Page
+      data={data}
+      agy={sampleAgy}
+      now={now}
+      route={{ view: "agy-quota" }}
+      reload={noop}
+    />,
+  );
+  expect(quotaHtml).toContain("Gemini 4 Carbon");
+  expect(quotaHtml).toContain("Gemini 3.8 Flash");
+
+  const agentsHtml = renderToStaticMarkup(
+    <Page
+      data={data}
+      agy={sampleAgy}
+      now={now}
+      route={{ view: "agents" }}
+      reload={noop}
+    />,
+  );
+  expect(agentsHtml).toContain('class="mobile-stack agents-stack"');
+  expect(agentsHtml).toContain("sample-mobile-layout-worker");
+  expect(agentsHtml).toContain("C0000000001/1700000000.000001");
+  expect(agentsHtml).toContain('data-label="Job or thread"');
+  expect(agentsHtml).toContain('data-label="Runtime"');
+
+  const accountsHtml = renderToStaticMarkup(
+    <Page data={data} now={now} route={{ view: "overview" }} reload={noop} />,
+  );
+  expect(accountsHtml).toContain(
+    'class="quota-table mobile-stack accounts-stack"',
+  );
+  expect(accountsHtml).toContain('data-label="Egress IP"');
+  expect(accountsHtml).toContain('data-label="In flight (now / limit)"');
 });

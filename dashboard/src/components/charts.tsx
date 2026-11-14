@@ -135,7 +135,7 @@ export function HourBars({
           className="tip"
           role="tooltip"
           style={{
-            left: `${String(Math.min(L + step * hover + step, W - 200))}px`,
+            left: `${String(Math.max(8, Math.min(L + step * hover + step, W - 200)))}px`,
             top: `${String(T)}px`,
           }}
         >
@@ -337,7 +337,7 @@ export function HourLines({
           className="tip"
           role="tooltip"
           style={{
-            left: `${String(Math.min(L + step * hover + step, W - 200))}px`,
+            left: `${String(Math.max(8, Math.min(L + step * hover + step, W - 200)))}px`,
             top: `${String(T)}px`,
           }}
         >

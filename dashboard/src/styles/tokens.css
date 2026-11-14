@@ -78,6 +78,7 @@
   --t-status-negative-bg: light-dark(#e8d8df, #2f242a);
   --t-status-info-bg: light-dark(#d8e2e2, #232c2f);
   --t-status-off-bg: light-dark(#dee3da, #232a25);
+  --t-bg-backdrop: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
   /* One chart hue; a second series is told apart by its dash and a
      direct label, never by a second color. */
   --t-chart-1: light-dark(#0b6a96, #2f9bd0);
@@ -121,6 +122,8 @@
   --t-width-share: 3rem;
   --t-width-figures: 21rem;
   --t-width-menu: 18rem;
+  --t-width-field: 18rem;
+  --t-width-meter-manage: 10rem;
   --t-height-bar: 3rem;
   --t-height-row: 36px;
   --t-height-chart: 9.5rem;
@@ -133,6 +136,8 @@
     0 1px 2px light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.3)),
     0 0.25rem 0.9rem light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.45));
   --t-z-popover: 30;
+  --t-z-backdrop: 40;
+  --t-z-drawer: 50;
 
   /* Icons. */
   --t-icon-sm: 14px;

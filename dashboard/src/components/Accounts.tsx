@@ -137,7 +137,7 @@ export function AccountsTable({ data, now }: { data: Dashboard; now: Date }) {
     );
   return (
     <div className="table-wrap scroll">
-      <table className="quota-table">
+      <table className="quota-table mobile-stack accounts-stack">
         <thead>
           <tr>
             <th scope="col">Account</th>
@@ -164,11 +164,11 @@ export function AccountsTable({ data, now }: { data: Dashboard; now: Date }) {
         <tbody>
           {data.accounts.map((a) => (
             <tr key={a.alias}>
-              <td className="two wrap">
+              <td className="two wrap" data-label="Account">
                 <div className="client-name">{a.alias}</div>
                 <Plan account={a} />
               </td>
-              <td className="two">
+              <td className="two" data-label="Status">
                 <Status
                   state={accountState(a, data.soft, data.hard, now)}
                   pill
@@ -176,7 +176,11 @@ export function AccountsTable({ data, now }: { data: Dashboard; now: Date }) {
                 <Pause account={a} />
               </td>
               {(["5h", "7d"] as const).map((w) => (
-                <td className="two" key={w}>
+                <td
+                  className="two"
+                  key={w}
+                  data-label={w === "5h" ? "5 h window" : "7 d window"}
+                >
                   <Meter
                     quota={a.quota[w]}
                     window={w}
@@ -187,13 +191,13 @@ export function AccountsTable({ data, now }: { data: Dashboard; now: Date }) {
                   />
                 </td>
               ))}
-              <td className="two">
+              <td className="two" data-label="Egress IP">
                 <Egress account={a} now={now} />
               </td>
-              <td className="n">
+              <td className="n" data-label="Sessions (bound / active)">
                 {a.bound_sessions} / {a.active_sessions}
               </td>
-              <td className="n">
+              <td className="n" data-label="In flight (now / limit)">
                 {a.in_flight} / {a.concurrency}
               </td>
             </tr>

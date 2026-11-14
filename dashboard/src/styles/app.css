@@ -81,6 +81,18 @@ th.n {
   flex-direction: column;
   padding: var(--t-space-3);
   gap: var(--t-space-2);
+  overflow-y: auto;
+}
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--t-space-2);
+}
+.nav-toggle,
+.nav-close,
+.sidebar-backdrop {
+  display: none;
 }
 .brand {
   font-family: var(--t-font-serif);
@@ -121,6 +133,7 @@ th.n {
   top: calc(100% + var(--t-space-1));
   left: 0;
   width: var(--t-width-menu);
+  max-width: min(100%, calc(100vw - var(--t-space-8)));
   z-index: var(--t-z-popover);
   background: var(--t-bg-panel);
   border-radius: var(--t-radius-md);
@@ -231,6 +244,9 @@ th.n {
   gap: var(--t-space-3);
   color: var(--t-text-muted);
   font-size: var(--t-text-sm);
+}
+.tools .item {
+  white-space: nowrap;
 }
 /* The top bar's fleet setting: what the bot answers on, what the work runs on. */
 .roles {
@@ -597,13 +613,15 @@ th.n {
   font-variant-numeric: tabular-nums;
 }
 
-/* Tables. Rows are told apart by height and hover, not by lines. */
+/* Tables. Rows are told apart by height and hover, not by lines. A table
+   too wide for a narrow screen scrolls inside its frame. */
 .table-wrap {
   border: 1px solid var(--t-border-subtle);
   border-radius: var(--t-radius-md);
-  overflow: hidden;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
-/* A table too wide for a narrow screen scrolls inside its frame. */
 .table-wrap.scroll {
   overflow-x: auto;
 }
@@ -855,6 +873,7 @@ tbody tr.link {
   z-index: var(--t-z-popover);
   pointer-events: none;
   white-space: nowrap;
+  max-width: calc(100% - var(--t-space-4));
   background: var(--t-bg-panel);
   border-radius: var(--t-radius-sm);
   box-shadow: var(--t-shadow-popover);
@@ -931,11 +950,13 @@ tbody tr.link {
   flex-direction: column;
   line-height: 1.2;
   padding: var(--t-space-1) 0;
+  min-width: 0;
 }
 .menu-item .host {
   font-size: var(--t-text-xs);
   color: var(--t-text-faint);
   font-weight: var(--t-weight-regular);
+  overflow-wrap: anywhere;
 }
 .icon.faint {
   color: var(--t-text-faint);
@@ -1416,7 +1437,10 @@ a.btn {
 }
 .form .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--t-width-field), 100%), 1fr)
+  );
   gap: var(--t-space-3) var(--t-space-6);
 }
 .field {
@@ -1570,7 +1594,7 @@ a.btn {
   width: 22%;
 }
 .manage-table .meter {
-  min-width: 9rem;
+  min-width: var(--t-width-meter-manage);
 }
 .manage-table td,
 .manage-table th {
@@ -1614,11 +1638,14 @@ td.source {
   font-size: var(--t-text-title);
   line-height: 1.1;
   color: var(--t-accent);
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .big-card .card-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 .big-card .card-head .title {
   font-family: var(--t-font-serif);
@@ -1634,9 +1661,14 @@ td.source {
 }
 .big-card .quota-name {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--t-space-2);
+}
+.big-card .client-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .big-card .quota-line {
   display: grid;
@@ -1651,5 +1683,372 @@ td.source {
 @media (max-width: 800px) {
   .home-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Narrow viewports: the sidebar becomes an overlay drawer, multi-column
+   strips and panels wrap cleanly, and on phones the primary monitor tables
+   stack each row into a labeled card. */
+@media (max-width: 1480px) {
+  .topbar {
+    height: auto;
+    min-height: var(--t-height-bar);
+    flex-wrap: wrap;
+    padding: var(--t-space-2) var(--t-space-6);
+    row-gap: var(--t-space-2);
+  }
+  .tools,
+  .roles {
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .roles .role {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+    z-index: var(--t-z-drawer);
+    width: min(var(--t-width-sidebar), calc(100vw - var(--t-space-12)));
+    box-shadow: var(--t-shadow-popover);
+  }
+  .sidebar.open {
+    display: flex;
+  }
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--t-z-backdrop);
+    border: 0;
+    padding: 0;
+    background: var(--t-bg-backdrop);
+    cursor: pointer;
+  }
+  .nav-toggle,
+  .nav-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--t-target);
+    min-height: var(--t-target);
+    padding: var(--t-space-1);
+    border: 1px solid var(--t-border-strong);
+    border-radius: var(--t-radius-sm);
+    background: none;
+    cursor: pointer;
+    color: var(--t-text);
+    flex: none;
+  }
+  .nav-close {
+    border-color: var(--t-border-subtle);
+    color: var(--t-text-muted);
+  }
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+  .topbar {
+    height: auto;
+    min-height: var(--t-height-bar);
+    flex-wrap: wrap;
+    padding: var(--t-space-2) var(--t-space-4);
+    gap: var(--t-space-2);
+  }
+  .crumbs {
+    flex: 1;
+    flex-wrap: wrap;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .tools {
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+    gap: var(--t-space-2);
+  }
+  .roles {
+    flex-wrap: wrap;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .roles .role {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .page-head,
+  .section-head {
+    flex-wrap: wrap;
+    row-gap: var(--t-space-1);
+  }
+  .page-head .sub,
+  .section-head .note {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .section-head .right {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--t-space-2);
+    max-width: 100%;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+  }
+  .strip:not(.three) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .strip:not(.three) > div:first-child {
+    grid-column: 1 / -1;
+  }
+  .strip:not(.three) > div:nth-child(2n) {
+    border-left: 0;
+  }
+  .strip:not(.three) > div + div {
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .strip .reason {
+    overflow-wrap: anywhere;
+  }
+  .stats,
+  .stats.six,
+  .stats.now {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stats > div:nth-child(odd) {
+    border-left: 0;
+  }
+  .stats > div:nth-child(n + 3) {
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .stats > div:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .red-row {
+    grid-template-columns: 1fr;
+  }
+  .red-figs {
+    border-left: 0;
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .two-col,
+  .two-col.wide-left,
+  .two-col.even {
+    grid-template-columns: 1fr;
+    gap: var(--t-space-4);
+  }
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: var(--t-space-4) var(--t-space-4) var(--t-space-8);
+  }
+  .tools {
+    width: 100%;
+    margin-left: 0;
+  }
+  .roles {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .roles .role {
+    display: flex;
+    flex-wrap: wrap;
+    line-height: var(--t-line-height-ui);
+    padding: var(--t-space-1) var(--t-space-2);
+  }
+  .roles .role + .role {
+    border-left: 0;
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .seg {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .big-card {
+    padding: var(--t-space-4);
+  }
+  .strip.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .strip.three > div:first-child {
+    grid-column: 1 / -1;
+  }
+  .strip.three > div:nth-child(2n) {
+    border-left: 0;
+  }
+  .strip.three > div + div {
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .stats > div {
+    padding: var(--t-space-3);
+  }
+  .stats .status,
+  .strip .status {
+    white-space: normal;
+  }
+  .red-chart .title,
+  .red-chart .title .key,
+  .card-head,
+  .win-head {
+    flex-wrap: wrap;
+  }
+  .tip {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .fact,
+  .est > div {
+    grid-template-columns: 1fr;
+    gap: var(--t-space-1);
+  }
+  .heat {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .heat-foot {
+    flex-wrap: wrap;
+  }
+
+  .table-wrap:has(> .mobile-stack) {
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .mobile-stack,
+  .mobile-stack tbody {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-stack tbody {
+    gap: var(--t-space-3);
+  }
+  .mobile-stack thead {
+    display: none;
+  }
+  .mobile-stack tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--t-space-2) var(--t-space-3);
+    padding: var(--t-space-3) var(--t-space-4);
+    border: 1px solid var(--t-border-subtle);
+    border-radius: var(--t-radius-md);
+  }
+  .mobile-stack td,
+  .quota-table.mobile-stack td {
+    grid-column: 1 / -1;
+    height: auto;
+    padding: 0;
+    white-space: normal;
+    min-width: 0;
+  }
+  .quota-table.mobile-stack .meter,
+  .quota-table.mobile-stack .plan {
+    min-width: 0;
+  }
+  .quota-table.mobile-stack .client-name,
+  .quota-table.mobile-stack td.n,
+  .quota-table.mobile-stack .meter .pct {
+    line-height: var(--t-line-height-ui);
+  }
+  .quota-table.mobile-stack td > .status {
+    display: inline-flex;
+    height: auto;
+  }
+  .mobile-stack td[data-label]::before {
+    content: attr(data-label);
+    color: var(--t-text-muted);
+    font-family: var(--t-font-ui);
+    font-size: var(--t-text-xs);
+    font-weight: var(--t-weight-regular);
+    line-height: var(--t-line-height-ui);
+    text-align: left;
+    flex: none;
+  }
+  .quota-table.mobile-stack td[data-label] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--t-space-1);
+  }
+  .quota-table.mobile-stack td:first-child::before,
+  .quota-table.accounts-stack td:nth-child(2)::before,
+  .agents-stack td:first-child::before,
+  .agents-stack td:last-child::before {
+    display: none;
+  }
+  .quota-table.accounts-stack td:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .quota-table.accounts-stack td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    align-items: flex-end;
+    text-align: right;
+    max-width: var(--t-width-sidebar);
+    overflow-wrap: anywhere;
+  }
+  .quota-table.accounts-stack td:nth-child(5) {
+    padding-top: var(--t-space-2);
+    border-top: 1px solid var(--t-border-subtle);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0;
+    column-gap: var(--t-space-3);
+    align-items: baseline;
+  }
+  .quota-table.accounts-stack td:nth-child(5) > * {
+    grid-column: 2;
+    justify-self: end;
+    text-align: right;
+  }
+  .quota-table.accounts-stack td:nth-child(6),
+  .quota-table.accounts-stack td:nth-child(7) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--t-space-3);
+  }
+  .agents-stack td:first-child {
+    grid-column: 1;
+    grid-row: 1;
+    font-weight: var(--t-weight-medium);
+    overflow-wrap: anywhere;
+  }
+  .agents-stack td:last-child {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .agents-stack td:nth-child(2) {
+    padding-top: var(--t-space-2);
+    border-top: 1px solid var(--t-border-subtle);
+  }
+  .agents-stack td:nth-child(n + 2):nth-child(-n + 6) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--t-space-3);
+    text-align: right;
+    overflow-wrap: anywhere;
   }
 }

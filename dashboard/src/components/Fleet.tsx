@@ -11,7 +11,7 @@ import { Empty, PageHead, Section, Status, Time } from "./ui";
 
 /** Where an agent belongs: its job, else its Slack thread. */
 function place(a: FleetAgent) {
-  if (a.job !== undefined && a.job !== "") return <>job {a.job}</>;
+  if (a.job !== undefined && a.job !== "") return <span>job {a.job}</span>;
   if (a.thread !== undefined && a.thread !== "")
     return <span className="mono small">{a.thread}</span>;
   return <span className="faint">—</span>;
@@ -28,7 +28,7 @@ export function AgentsTable({
   if (agents.length === 0) return <Empty title="No agents." />;
   return (
     <div className="table-wrap scroll">
-      <table>
+      <table className="mobile-stack agents-stack">
         <thead>
           <tr>
             <th scope="col">Agent</th>
@@ -48,16 +48,22 @@ export function AgentsTable({
               a.ended_at === undefined ? now.getTime() : Date.parse(a.ended_at);
             return (
               <tr key={`${a.name}-${a.started_at}`}>
-                <td className="mono small wrap">{a.name}</td>
-                <td>{a.role}</td>
-                <td className="wrap">{place(a)}</td>
-                <td>
-                  {runtimeName(a.kind)}
-                  {a.model === undefined || a.model === "" ? null : (
-                    <span className="faint"> · {a.model}</span>
-                  )}
+                <td className="mono small wrap" data-label="Agent">
+                  {a.name}
                 </td>
-                <td>
+                <td data-label="Role">{a.role}</td>
+                <td className="wrap" data-label="Job or thread">
+                  {place(a)}
+                </td>
+                <td data-label="Runtime">
+                  <span>
+                    {runtimeName(a.kind)}
+                    {a.model === undefined || a.model === "" ? null : (
+                      <span className="faint"> · {a.model}</span>
+                    )}
+                  </span>
+                </td>
+                <td data-label="Started">
                   <Time iso={a.started_at}>
                     {new Date(a.started_at).toLocaleString(undefined, {
                       month: "short",
@@ -67,10 +73,10 @@ export function AgentsTable({
                     })}
                   </Time>
                 </td>
-                <td className="n">
+                <td className="n" data-label="Ran">
                   {formatSpan(end - Date.parse(a.started_at))}
                 </td>
-                <td>
+                <td data-label="State">
                   <Status state={agentState(a)} />
                 </td>
               </tr>

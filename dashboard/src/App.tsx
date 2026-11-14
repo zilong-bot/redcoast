@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AccountDetail } from "./components/AccountDetail";
 import { AgyOverview, AgyQuota } from "./components/Agy";
 import { Agents } from "./components/Fleet";
@@ -130,9 +130,41 @@ export function App() {
   const route = useRoute();
   const [theme, setTheme] = useTheme();
   const [palette, setPalette] = usePalette();
+  const routeKey = `${route.view}:${route.arg ?? ""}`;
+  const [openAtRoute, setOpenAtRoute] = useState<string | null>(null);
+  const navOpen = openAtRoute === routeKey;
+  const closeNav = () => {
+    setOpenAtRoute(null);
+  };
+  useEffect(() => {
+    if (!navOpen) return;
+    const escape = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpenAtRoute(null);
+    };
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("keydown", escape);
+    };
+  }, [navOpen]);
   return (
     <div className="shell">
-      <Sidebar data={data} agy={agy} route={route} />
+      {navOpen ? (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          aria-label="Close navigation"
+          tabIndex={-1}
+          onClick={closeNav}
+        />
+      ) : null}
+      <Sidebar
+        data={data}
+        agy={agy}
+        route={route}
+        open={navOpen}
+        onClose={closeNav}
+      />
       <div className="main">
         <Topbar
           data={data}
@@ -145,6 +177,10 @@ export function App() {
           palette={palette}
           setPalette={setPalette}
           reload={reload}
+          navOpen={navOpen}
+          onToggleNav={() => {
+            setOpenAtRoute(navOpen ? null : routeKey);
+          }}
         />
         <main className="content">
           {fetchError === null ? null : (
