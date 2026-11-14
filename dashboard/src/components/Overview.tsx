@@ -27,6 +27,7 @@ import {
 import type { Dashboard } from "../lib/types";
 import { cacheApart, providerName } from "../lib/words";
 import { AccountsTable, QuotaRefreshButton } from "./Accounts";
+import { AgyQuotaSection } from "./AgyQuota";
 import { HourBars, HourLines } from "./charts";
 import { Empty, PageHead, Section, Share, Status } from "./ui";
 
@@ -405,6 +406,7 @@ export function Overview({
       >
         <AccountsTable data={data} now={now} />
       </Section>
+      <AgyQuotaSection now={now} />
     </>
   );
 }

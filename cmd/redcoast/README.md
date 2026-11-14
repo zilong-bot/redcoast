@@ -15,7 +15,7 @@ sudo ln -sfn /opt/redcoast/releases/<version> /opt/redcoast/current
 
 Or build it from source with the Go version in `go.mod`: `CGO_ENABLED=0 go build -trimpath -o redcoast ./cmd/redcoast`. The release build adds `-buildvcs=false` and is reproducible.
 
-The page is the dashboard's frontend; set `dashboard_dir: /opt/redcoast/current/dashboard` to serve it, or the gateway serves only `/dashboard.json`. To build it from source, run `pnpm install --frozen-lockfile && pnpm run build` in `dashboard/` with the Node and pnpm versions it pins; the page is `dashboard/dist/index.html`.
+The page is the dashboard's frontend; set `dashboard_dir: /opt/redcoast/current/dashboard` to serve it, or the gateway serves only `/dashboard.json`. To build it from source, run `pnpm install --frozen-lockfile && pnpm run build` in `dashboard/` with the Node and pnpm versions it pins; the page is `dashboard/dist/index.html`. With `agy_quota_file` set, the overview also shows the quota of a Google Antigravity CLI (`agy`) account that runs beside the gateway: the gateway does not log in to Google, it serves the file at `/agy-quota.json`, which a timer of the user who runs agy writes from the `data` of `agy -p /usage --output-format json`.
 
 A handoff (below) starts the program at the path the service started, so an upgrade installs the new release, moves the `current` link and hands off.
 

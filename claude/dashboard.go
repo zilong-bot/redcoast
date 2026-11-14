@@ -37,6 +37,9 @@ type DashboardConfig struct {
 	Tunnels   func() (open, limit int)
 	Backup    func() backup.Status // nil when no backups are configured
 	Dir       string               // holds the dashboard page, index.html, served at /; empty for none
+	// AgyQuotaFile is the Antigravity CLI quota file GET /agy-quota.json shows; empty
+	// when there is none, and the route answers {"configured": false}.
+	AgyQuotaFile string
 	// QuotaRefresh is the refresh POST /quota/refresh starts; nil when the provider
 	// cannot refresh, and the endpoint answers 501.
 	QuotaRefresh *QuotaRefresh
@@ -299,6 +302,9 @@ func (d *Dashboard) Handler() http.Handler {
 		writeJSON(w, http.StatusOK, view)
 	})
 	mux.HandleFunc("POST /quota/refresh", d.serveQuotaRefresh)
+	mux.HandleFunc("GET /agy-quota.json", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, http.StatusOK, readAgyQuota(d.cfg.AgyQuotaFile))
+	})
 	d.writeRoutes(mux)
 	if d.cfg.Dir != "" {
 		mux.Handle("GET /{$}", page(d.cfg.Dir))
