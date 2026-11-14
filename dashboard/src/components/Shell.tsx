@@ -213,10 +213,10 @@ export function Sidebar({
   return (
     <aside className="sidebar" aria-label="Navigation">
       <div className="brand">redcoast</div>
-      {data === null ? null : <ProviderMenu data={data} route={route} />}
       <nav className="nav" aria-label="Pages">
         <NavItem view="home" current={v} icon={House} />
         <div className="nav-section">Redcoast</div>
+        {data === null ? null : <ProviderMenu data={data} route={route} />}
         <div className="nav-group">Traffic</div>
         <NavItem view="overview" current={v} icon={LayoutDashboard} />
         <NavItem

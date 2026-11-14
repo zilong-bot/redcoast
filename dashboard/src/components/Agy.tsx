@@ -56,20 +56,19 @@ export function AgyMeter({
           className="fill"
           style={{ width: `${String(Math.min(u, 1) * 100)}%` }}
         />
-        {p === null ? null : p.idle ? (
+        {p === null ? null : (
           <div
-            className="even idle"
-            title="The window has not started: it starts at the first use"
-          />
-        ) : (
-          <div
-            className="even"
+            className={p.idle ? "even idle" : "even"}
             // Kept inside the track, so a mark near either end does not
             // stick out past the bars of the rows above and below.
             style={{
-              left: `clamp(calc(var(--t-height-meter) / 2), ${(Math.min(p.elapsed, 1) * 100).toFixed(1)}%, calc(100% - var(--t-height-meter) / 2))`,
+              left: `clamp(2.5px, ${(Math.min(p.elapsed, 1) * 100).toFixed(1)}%, calc(100% - 2.5px))`,
             }}
-            title={`Even pace: ${formatPercent(p.elapsed)} of the window has passed`}
+            title={
+              p.idle
+                ? "The window has not started: it starts at the first use"
+                : `Even pace: ${formatPercent(p.elapsed)} of the window has passed`
+            }
           />
         )}
       </div>
