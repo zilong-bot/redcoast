@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { AccountDetail } from "./components/AccountDetail";
+import { AgyOverview, AgyQuota } from "./components/Agy";
+import { Agents } from "./components/Fleet";
 import { Accounts } from "./components/Accounts";
 import { AddAccount } from "./components/AddAccount";
 import { Client } from "./components/Client";
@@ -11,10 +13,11 @@ import { Overview } from "./components/Overview";
 import { Sessions } from "./components/Sessions";
 import { Sidebar, Topbar } from "./components/Shell";
 import { Status } from "./components/ui";
+import { useAgy, type AgyMonitor } from "./lib/agy";
 import { formatAgo, isStale } from "./lib/format";
 import { parseClient, routeHref, VIEW_NAMES, type Route } from "./lib/route";
 import type { Dashboard } from "./lib/types";
-import { useData, useNow, useRoute, useTheme } from "./lib/useData";
+import { useData, useNow, usePalette, useRoute, useTheme } from "./lib/useData";
 import { providerName } from "./lib/words";
 
 const REFRESH_MS = 30_000;
@@ -22,18 +25,20 @@ const REFRESH_MS = 30_000;
 /** The page of route over data. */
 export function Page({
   data,
+  agy = null,
   now,
   route,
   reload,
 }: {
   data: Dashboard;
+  agy?: AgyMonitor | null;
   now: Date;
   route: Route;
   reload: () => void;
 }) {
   switch (route.view) {
     case "overview":
-      return <Overview data={data} now={now} reload={reload} />;
+      return <Overview data={data} agy={agy} now={now} reload={reload} />;
     case "clients":
       return <Clients data={data} now={now} />;
     case "client": {
@@ -62,11 +67,21 @@ export function Page({
       return <Exits data={data} now={now} />;
     case "monitor":
       return <Monitor data={data} now={now} focus={route.arg} />;
+    case "agy":
+      return <AgyOverview m={agy} now={now} />;
+    case "agy-quota":
+      return <AgyQuota m={agy} now={now} />;
+    case "agents":
+      return <Agents m={agy} now={now} kind={route.arg} />;
   }
 }
 
 function crumbs(data: Dashboard | null, route: Route): ReactNode[] {
   const trail: ReactNode[] = [];
+  if (rootOf(route) !== "Gateway") {
+    trail.push(VIEW_NAMES[route.view]);
+    return trail;
+  }
   // Without a provider the trail's first place, "Gateway", already names it.
   if (data?.gateway.provider !== undefined)
     trail.push(
@@ -96,21 +111,34 @@ function crumbs(data: Dashboard | null, route: Route): ReactNode[] {
   return trail;
 }
 
+/** The trail's first place: the page group the view is in. */
+function rootOf(route: Route): string {
+  if (route.view === "agy" || route.view === "agy-quota") return "Antigravity";
+  if (route.view === "agents") return "Fleet";
+  return "Gateway";
+}
+
 export function App() {
   const { data, fetchError, reload } = useData("./dashboard.json", REFRESH_MS);
+  const agy = useAgy(REFRESH_MS);
   const now = useNow(1_000);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
+  const [palette, setPalette] = usePalette();
   return (
     <div className="shell">
-      <Sidebar data={data} route={route} />
+      <Sidebar data={data} agy={agy} route={route} />
       <div className="main">
         <Topbar
           data={data}
+          agy={agy}
+          root={rootOf(route)}
           crumbs={crumbs(data, route)}
           now={now}
           theme={theme}
           setTheme={setTheme}
+          palette={palette}
+          setPalette={setPalette}
           reload={reload}
         />
         <main className="content">
@@ -139,7 +167,13 @@ export function App() {
               <p className="muted">Loading…</p>
             ) : null
           ) : (
-            <Page data={data} now={now} route={route} reload={reload} />
+            <Page
+              data={data}
+              agy={agy}
+              now={now}
+              route={route}
+              reload={reload}
+            />
           )}
         </main>
       </div>

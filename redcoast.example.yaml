@@ -35,7 +35,7 @@ admin_socket: /run/redcoast/admin.sock # required
 session_db: /var/lib/redcoast/sessions.db # required
 inventory: /etc/redcoast/inventory # required
 dashboard_dir: "" # built dashboard frontend; empty serves only /dashboard.json
-agy_quota_file: "" # Google Antigravity CLI usage data a timer writes (agy -p /usage); empty hides the panel
+agy_monitor_file: "" # AGY (Google Antigravity CLI) quota and fleet agents a timer writes; empty hides the AGY and Fleet pages
 # The other providers' dashboards, which the page links to for switching;
 # empty shows only this one. Each url is an http or https URL without a user
 # name or password, or :<port> for the page's own scheme and host at that

@@ -1,11 +1,13 @@
 import {
   Activity,
+  Bot,
   Check,
   ChevronDown,
   ChevronRight,
   Clock,
   Cpu,
   ExternalLink,
+  Gauge,
   Globe,
   LayoutDashboard,
   List,
@@ -13,6 +15,7 @@ import {
   Monitor as MonitorIcon,
   Moon,
   RefreshCw,
+  Sparkles,
   Sun,
   Terminal,
   User,
@@ -26,9 +29,10 @@ import {
   type Route,
   type View,
 } from "../lib/route";
+import { roleName, type AgyMonitor, type FleetRoles } from "../lib/agy";
 import { clientRows, healthState } from "../lib/stats";
 import type { Dashboard } from "../lib/types";
-import type { Theme } from "../lib/useData";
+import { PALETTES, type Palette, type Theme } from "../lib/useData";
 import { providerName } from "../lib/words";
 import { Ago } from "./ui";
 
@@ -191,9 +195,11 @@ function clientCount(data: Dashboard): number {
 
 export function Sidebar({
   data,
+  agy = null,
   route,
 }: {
   data: Dashboard | null;
+  agy?: AgyMonitor | null;
   route: Route;
 }) {
   // A client's page is one of Clients; an account's, and adding one, of Manage.
@@ -208,6 +214,7 @@ export function Sidebar({
       <div className="brand">redcoast</div>
       {data === null ? null : <ProviderMenu data={data} route={route} />}
       <nav className="nav" aria-label="Pages">
+        <div className="nav-section">Redcoast</div>
         <div className="nav-group">Traffic</div>
         <NavItem view="overview" current={v} icon={LayoutDashboard} />
         <NavItem
@@ -231,6 +238,20 @@ export function Sidebar({
         />
         <NavItem view="manage" current={v} icon={Settings} />
         <NavItem view="exits" current={v} icon={Globe} />
+        {agy?.configured !== true ? null : (
+          <>
+            <div className="nav-section">Antigravity</div>
+            <NavItem view="agy" current={v} icon={Sparkles} />
+            <NavItem view="agy-quota" current={v} icon={Gauge} />
+            <div className="nav-section">Fleet</div>
+            <NavItem
+              view="agents"
+              current={v}
+              icon={Bot}
+              count={agy.agents.filter((a) => a.state !== "ended").length}
+            />
+          </>
+        )}
       </nav>
       <nav className="nav nav-bottom" aria-label="Gateway">
         <NavItem view="monitor" current={v} icon={Activity} />
@@ -245,25 +266,63 @@ const THEMES: { theme: Theme; label: string; icon: LucideIcon }[] = [
   { theme: "dark", label: "Dark theme", icon: Moon },
 ];
 
+/**
+ * What the Slack bot answers on and what the work runs on now: fleet's
+ * setting, shown on every page. The page only shows it; it changes in Slack
+ * (the switch-runtime skill) or on the machine.
+ */
+function Roles({ roles }: { roles: FleetRoles }) {
+  const work = roleName(roles.lead);
+  const workers = roleName(roles.worker);
+  return (
+    <span
+      className="roles"
+      title="fleet's setting for new sessions; change it with the switch-runtime skill"
+    >
+      <span className="role">
+        <span className="k">Chat</span>
+        {roleName(roles.chat)}
+      </span>
+      <span
+        className="role"
+        title={
+          work === workers ? undefined : `Leads: ${work}; workers: ${workers}`
+        }
+      >
+        <span className="k">Work</span>
+        {work === workers ? work : `${work} / ${workers}`}
+      </span>
+    </span>
+  );
+}
+
 export function Topbar({
   data,
+  agy = null,
+  root,
   crumbs,
   now,
   theme,
   setTheme,
+  palette,
+  setPalette,
   reload,
 }: {
   data: Dashboard | null;
+  agy?: AgyMonitor | null;
+  root: string;
   crumbs: ReactNode[];
   now: Date;
   theme: Theme;
   setTheme: (t: Theme) => void;
+  palette: Palette;
+  setPalette: (p: Palette) => void;
   reload: () => void;
 }) {
   return (
     <header className="topbar">
       <ol className="crumbs" aria-label="Breadcrumb">
-        <li>Gateway</li>
+        <li>{root}</li>
         {crumbs.map((c, i) => (
           // eslint-disable-next-line @eslint-react/no-array-index-key -- the trail's places are its order
           <li key={i}>
@@ -273,12 +332,29 @@ export function Topbar({
         ))}
       </ol>
       <div className="tools">
+        {agy?.roles === undefined ? null : <Roles roles={agy.roles} />}
         {data === null ? null : (
           <span className="item">
             <Clock className="icon sm" aria-hidden="true" />
             Updated <Ago iso={data.at} now={now} />
           </span>
         )}
+        <div className="seg" role="group" aria-label="Palette">
+          {PALETTES.map(({ palette: p, label }) => (
+            <button
+              key={p}
+              type="button"
+              aria-pressed={palette === p}
+              aria-label={`${label} colours`}
+              title={label}
+              onClick={() => {
+                setPalette(p);
+              }}
+            >
+              <span className={`sw sw-${p}`} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
         <div className="seg" role="group" aria-label="Theme">
           {THEMES.map(({ theme: t, label, icon: Icon }) => (
             <button

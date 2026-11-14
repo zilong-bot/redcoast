@@ -152,3 +152,142 @@
     --t-target: 44px;
   }
 }
+
+/* Palettes, chosen on the page (data-palette on the root; the choice is
+   kept in local storage). Paper, Ocean and Plum are ledger-zilong's
+   palettes, mapped onto these tokens; Paper is the default. Sage, the
+   tokens above, is redcoast's own. Each palette's light and dark go by
+   light-dark(), as the theme picks. */
+:root:not([data-palette]),
+:root[data-palette="paper"] {
+  --t-bg-page: light-dark(#fafaf9, #0c0a09);
+  --t-bg-panel: light-dark(#ffffff, #1c1917);
+  --t-bg-hover: light-dark(#f5f5f4, #292524);
+  --t-bg-panel-hover: light-dark(#efeeed, #2f2a27);
+  --t-bg-active: light-dark(#e7e5e4, #3a3532);
+  --t-bg-selected: light-dark(#f2f4ff, #2c2b3b);
+  --t-text: light-dark(#1c1917, #f5f5f4);
+  --t-text-muted: light-dark(#57534e, #a8a29e);
+  --t-text-faint: light-dark(#6b6560, #9a948f);
+  --t-accent: light-dark(#4f46e5, #818cf8);
+  --t-accent-hover: light-dark(#4338ca, #a5b4fc);
+  --t-text-on-accent: light-dark(#ffffff, #0c0a09);
+  --t-border-subtle: light-dark(#e7e5e4, #292524);
+  --t-border-strong: light-dark(#8f8984, #6f6964);
+  --t-status-active: light-dark(#15803d, #4ade80);
+  --t-status-active-bg: light-dark(#ecf5ef, #223526);
+  --t-status-trial: light-dark(#b45309, #fbbf24);
+  --t-status-trial-bg: light-dark(#fbf5f0, #3b3019);
+  --t-status-draft: light-dark(#57534e, #a8a29e);
+  --t-status-draft-bg: light-dark(#f5f5f4, #292524);
+  --t-status-ok: light-dark(#15803d, #4ade80);
+  --t-status-warning: light-dark(#b45309, #fbbf24);
+  --t-status-negative: light-dark(#d42424, #f87171);
+  --t-status-info: light-dark(#4f46e5, #818cf8);
+  --t-status-off: light-dark(#57534e, #a8a29e);
+  --t-chip: light-dark(#ffffff, #1c1917);
+  --t-status-ok-bg: light-dark(#ecf5ef, #223526);
+  --t-status-warning-bg: light-dark(#fbf5f0, #3b3019);
+  --t-status-negative-bg: light-dark(#fdf0f0, #3b2524);
+  --t-status-info-bg: light-dark(#eef2ff, #2c2b3b);
+  --t-status-off-bg: light-dark(#f5f5f4, #292524);
+  --t-chart-1: light-dark(#4f46e5, #818cf8);
+  --t-chart-track: light-dark(#e7e5e4, #3a3532);
+  --t-chart-grid: light-dark(#e7e5e4, #292524);
+  --t-chart-pace: light-dark(#8f8984, #6f6964);
+}
+:root[data-palette="ocean"] {
+  --t-bg-page: light-dark(#f6f8fb, #0b1220);
+  --t-bg-panel: light-dark(#ffffff, #111a2e);
+  --t-bg-hover: light-dark(#f1f5f9, #1a2540);
+  --t-bg-panel-hover: light-dark(#e9eef4, #1f2b47);
+  --t-bg-active: light-dark(#e2e8f0, #26334f);
+  --t-bg-selected: light-dark(#edf5f4, #153845);
+  --t-text: light-dark(#0f172a, #e2e8f0);
+  --t-text-muted: light-dark(#475569, #94a3b8);
+  --t-text-faint: light-dark(#5b6b80, #8d9bb0);
+  --t-accent: light-dark(#0f766e, #2dd4bf);
+  --t-accent-hover: light-dark(#115e59, #5eead4);
+  --t-text-on-accent: light-dark(#ffffff, #0b1220);
+  --t-border-subtle: light-dark(#e2e8f0, #1f2b47);
+  --t-border-strong: light-dark(#8290a5, #5d6b85);
+  --t-status-active: light-dark(#15803d, #4ade80);
+  --t-status-active-bg: light-dark(#ecf5ef, #193539);
+  --t-status-trial: light-dark(#b45309, #fbbf24);
+  --t-status-trial-bg: light-dark(#fbf5f0, #32312d);
+  --t-status-draft: light-dark(#475569, #94a3b8);
+  --t-status-draft-bg: light-dark(#f1f5f9, #1a2540);
+  --t-status-ok: light-dark(#15803d, #4ade80);
+  --t-status-warning: light-dark(#b45309, #fbbf24);
+  --t-status-negative: light-dark(#d42424, #f87171);
+  --t-status-info: light-dark(#0f766e, #2dd4bf);
+  --t-status-off: light-dark(#475569, #94a3b8);
+  --t-chip: light-dark(#ffffff, #111a2e);
+  --t-status-ok-bg: light-dark(#ecf5ef, #193539);
+  --t-status-warning-bg: light-dark(#fbf5f0, #32312d);
+  --t-status-negative-bg: light-dark(#fdf0f0, #312637);
+  --t-status-info-bg: light-dark(#e6f2f1, #153845);
+  --t-status-off-bg: light-dark(#f1f5f9, #1a2540);
+  --t-chart-1: light-dark(#0f766e, #2dd4bf);
+  --t-chart-track: light-dark(#e2e8f0, #26334f);
+  --t-chart-grid: light-dark(#e2e8f0, #1f2b47);
+  --t-chart-pace: light-dark(#8290a5, #5d6b85);
+}
+:root[data-palette="plum"] {
+  --t-bg-page: light-dark(#fbf9f7, #151012);
+  --t-bg-panel: light-dark(#ffffff, #211a1d);
+  --t-bg-hover: light-dark(#f7f3f0, #2d2428);
+  --t-bg-panel-hover: light-dark(#efe9e5, #33292e);
+  --t-bg-active: light-dark(#eae4df, #3d3237);
+  --t-bg-selected: light-dark(#f9f4f6, #402f37);
+  --t-text: light-dark(#2a2024, #f1e9ec);
+  --t-text-muted: light-dark(#5e4d54, #b8a9af);
+  --t-text-faint: light-dark(#71616a, #a99ba1);
+  --t-accent: light-dark(#8b3a62, #e39bbe);
+  --t-accent-hover: light-dark(#732f51, #edb5d0);
+  --t-text-on-accent: light-dark(#ffffff, #151012);
+  --t-border-subtle: light-dark(#eae4df, #33292e);
+  --t-border-strong: light-dark(#968890, #75666d);
+  --t-status-active: light-dark(#15803d, #4ade80);
+  --t-status-active-bg: light-dark(#ecf5ef, #27352b);
+  --t-status-trial: light-dark(#b45309, #fbbf24);
+  --t-status-trial-bg: light-dark(#fbf5f0, #40311e);
+  --t-status-draft: light-dark(#5e4d54, #b8a9af);
+  --t-status-draft-bg: light-dark(#f5f1ee, #2d2428);
+  --t-status-ok: light-dark(#15803d, #4ade80);
+  --t-status-warning: light-dark(#b45309, #fbbf24);
+  --t-status-negative: light-dark(#d42424, #f87171);
+  --t-status-info: light-dark(#8b3a62, #e39bbe);
+  --t-status-off: light-dark(#5e4d54, #b8a9af);
+  --t-chip: light-dark(#ffffff, #211a1d);
+  --t-status-ok-bg: light-dark(#ecf5ef, #27352b);
+  --t-status-warning-bg: light-dark(#fbf5f0, #40311e);
+  --t-status-negative-bg: light-dark(#fdf0f0, #3f2629);
+  --t-status-info-bg: light-dark(#f6eff2, #402f37);
+  --t-status-off-bg: light-dark(#f5f1ee, #2d2428);
+  --t-chart-1: light-dark(#8b3a62, #e39bbe);
+  --t-chart-track: light-dark(#eae4df, #3d3237);
+  --t-chart-grid: light-dark(#eae4df, #33292e);
+  --t-chart-pace: light-dark(#968890, #75666d);
+}
+
+/* The palette picker's swatches: each palette's accent. */
+.sw {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--t-radius-full);
+  border: 1px solid var(--t-border-strong);
+}
+.sw-paper {
+  background: light-dark(#4f46e5, #818cf8);
+}
+.sw-ocean {
+  background: light-dark(#0f766e, #2dd4bf);
+}
+.sw-plum {
+  background: light-dark(#8b3a62, #e39bbe);
+}
+.sw-sage {
+  background: light-dark(#7d3a1e, #dba37f);
+}

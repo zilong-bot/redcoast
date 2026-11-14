@@ -232,6 +232,29 @@ th.n {
   color: var(--t-text-muted);
   font-size: var(--t-text-sm);
 }
+/* The top bar's fleet setting: what the bot answers on, what the work runs on. */
+.roles {
+  display: inline-flex;
+  border: 1px solid var(--t-border-subtle);
+  border-radius: var(--t-radius-sm);
+  background: var(--t-bg-panel);
+}
+.roles .role {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--t-space-1);
+  padding: 0 var(--t-space-2);
+  line-height: calc(var(--t-target) - 2px);
+  color: var(--t-text);
+  white-space: nowrap;
+}
+.roles .role + .role {
+  border-left: 1px solid var(--t-border-subtle);
+}
+.roles .k {
+  color: var(--t-text-faint);
+  font-size: var(--t-text-xs);
+}
 .seg {
   display: inline-flex;
   border: 1px solid var(--t-border-strong);
@@ -363,6 +386,12 @@ th.n {
   border: 1px solid var(--t-border-subtle);
   border-radius: var(--t-radius-md);
   margin-bottom: var(--t-space-6);
+}
+.strip.four {
+  grid-template-columns: repeat(4, 1fr);
+}
+.strip.wide {
+  grid-template-columns: 1.8fr repeat(6, 1fr);
 }
 .strip > div {
   padding: var(--t-space-3) var(--t-space-4);
@@ -870,6 +899,25 @@ tbody tr.link {
 }
 .nav-group:first-child {
   padding-top: 0;
+}
+/* The three page groups: the gateway's own pages, AGY's and fleet's. A
+   section's first group follows its title closely. */
+.nav-section {
+  color: var(--t-text);
+  font-family: var(--t-font-serif);
+  font-weight: var(--t-weight-serif);
+  font-size: var(--t-text-lg);
+  padding: var(--t-space-4) var(--t-space-2) var(--t-space-1);
+  margin-top: var(--t-space-2);
+  border-top: 1px solid var(--t-border-subtle);
+}
+.nav-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.nav-section + .nav-group {
+  padding-top: var(--t-space-1);
 }
 .menu-item .grow {
   display: flex;

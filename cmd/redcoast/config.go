@@ -36,7 +36,7 @@ type config struct {
 	healthListen       string                 // health endpoint
 	dashboardListen    string                 // read-only dashboard
 	dashboardDir       string                 // the dashboard frontend's built files; empty for none
-	agyQuotaFile       string                 // the Antigravity CLI quota file the dashboard shows; empty for none
+	agyMonitorFile     string                 // the AGY and fleet file the dashboard shows; empty for none
 	dashboardLinks     []claude.DashboardLink // the other providers' dashboards; nil for none
 	hostNames          []string               // the Host names /health and the dashboard answer
 	egressInterval     time.Duration
@@ -115,7 +115,7 @@ type fileConfig struct {
 	SessionDB      string          `yaml:"session_db"`
 	Inventory      string          `yaml:"inventory"`
 	DashboardDir   string          `yaml:"dashboard_dir"`
-	AgyQuotaFile   string          `yaml:"agy_quota_file"`
+	AgyMonitorFile string          `yaml:"agy_monitor_file"`
 	DashboardLinks []dashboardLink `yaml:"dashboard_links"`
 	CaptureDir     string          `yaml:"capture_dir"`
 	EgressInterval time.Duration   `yaml:"egress_interval"`
@@ -298,7 +298,7 @@ func parseConfig(provider string, data []byte) (config, error) {
 		return config{}, errors.Join(errs...)
 	}
 	return config{provider: provider, codex: f.Codex, tls: serverTLS, serverName: serverName, warning: warning, listen: f.Listen.Reverse, forwardListen: f.Listen.Forward, socket: f.SessionSocket, sessionListen: f.Listen.Session, adminSocket: f.AdminSocket,
-		healthListen: f.Listen.Health, dashboardListen: f.Listen.Dashboard, dashboardDir: f.DashboardDir, agyQuotaFile: f.AgyQuotaFile, dashboardLinks: links, hostNames: hostNames, egressInterval: f.EgressInterval, limits: limits,
+		healthListen: f.Listen.Health, dashboardListen: f.Listen.Dashboard, dashboardDir: f.DashboardDir, agyMonitorFile: f.AgyMonitorFile, dashboardLinks: links, hostNames: hostNames, egressInterval: f.EgressInterval, limits: limits,
 		accountConcurrency: f.Limits.AccountConcurrency, upstream: target, sessionDB: f.SessionDB, captureDir: f.CaptureDir, inventory: f.Inventory,
 		tokenRef: token, credentialsStdin: f.Credentials.StdinTestEntry, writeAllowFrom: allowFrom, tokenRefTemplate: f.DashboardWrite.TokenRefTemplate, setupEnabled: setupEnabled, adminWrite: adminWrite,
 		retention: session.Retention{Traffic: time.Duration(f.Retention.TrafficDays) * 24 * time.Hour, Sessions: time.Duration(f.Retention.SessionDays) * 24 * time.Hour},

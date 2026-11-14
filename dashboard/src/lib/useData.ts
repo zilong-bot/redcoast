@@ -106,3 +106,37 @@ export function useTheme(): [Theme, (t: Theme) => void] {
   }, [theme]);
   return [theme, setTheme];
 }
+
+export type Palette = "paper" | "ocean" | "plum" | "sage";
+
+export const PALETTES: { palette: Palette; label: string }[] = [
+  { palette: "paper", label: "Paper" },
+  { palette: "ocean", label: "Ocean" },
+  { palette: "plum", label: "Plum" },
+  { palette: "sage", label: "Sage" },
+];
+
+const PALETTE_KEY = "redcoast-palette";
+
+function storedPalette(): Palette {
+  try {
+    const p = localStorage.getItem(PALETTE_KEY);
+    return PALETTES.find((x) => x.palette === p)?.palette ?? "paper";
+  } catch {
+    return "paper";
+  }
+}
+
+/** The chosen palette, kept in local storage and set on the root element. */
+export function usePalette(): [Palette, (p: Palette) => void] {
+  const [palette, setPalette] = useState(storedPalette);
+  useEffect(() => {
+    document.documentElement.dataset["palette"] = palette;
+    try {
+      localStorage.setItem(PALETTE_KEY, palette);
+    } catch {
+      // Storage may be off; the choice then lasts for this page only.
+    }
+  }, [palette]);
+  return [palette, setPalette];
+}

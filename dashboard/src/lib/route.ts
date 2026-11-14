@@ -11,13 +11,17 @@ export type View =
   | "account"
   | "add"
   | "exits"
-  | "monitor";
+  | "monitor"
+  | "agy"
+  | "agy-quota"
+  | "agents";
 
 export interface Route {
   view: View;
   // A client machine for sessions; `<machine>/<program>` for client; a
   // section for monitor; an alias, then `/edit` when editing, for account;
-  // the step, then `/<alias>` from step 2, for add.
+  // the step, then `/<alias>` from step 2, for add; a runtime (claude or
+  // agy) for agents.
   arg?: string | undefined;
 }
 
@@ -32,6 +36,9 @@ const VIEWS = new Set<string>([
   "add",
   "exits",
   "monitor",
+  "agy",
+  "agy-quota",
+  "agents",
 ]);
 
 function isView(v: string): v is View {
@@ -94,6 +101,9 @@ export const VIEW_NAMES: Record<View, string> = {
   add: "Add account",
   exits: "Exits",
   monitor: "Monitor",
+  agy: "Overview",
+  "agy-quota": "Quota",
+  agents: "Agents",
 };
 
 // A machine's name has no slash, so the first one ends it.

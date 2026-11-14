@@ -194,7 +194,7 @@ export function Meter({
 }
 
 /** Points of the window used beyond an even pace; marked from 5 over. */
-function PaceText({ by }: { by: number }) {
+export function PaceText({ by }: { by: number }) {
   const n = by > 0 ? `+${String(by)}` : by < 0 ? `−${String(-by)}` : "0";
   if (by >= 5)
     return (

@@ -409,7 +409,7 @@ export function QuotaCurve({
   readings: Reading[];
   from: number;
   to: number;
-  soft: number;
+  soft: number | null; // null draws no soft limit
   reset: number | null;
 }) {
   const [ref, { width: W, height: H }] = useSize(CURVE_SIZE);
@@ -426,7 +426,9 @@ export function QuotaCurve({
         role="img"
         aria-label={label}
       >
-        <line className="soft" x1={0} x2={W} y1={y(soft)} y2={y(soft)} />
+        {soft === null ? null : (
+          <line className="soft" x1={0} x2={W} y1={y(soft)} y2={y(soft)} />
+        )}
         {!inSpan ? null : (
           <line className="reset" x1={x(reset)} x2={x(reset)} y1={0} y2={H}>
             <title>{`Reset at ${formatClock(new Date(reset).toISOString())} UTC`}</title>
