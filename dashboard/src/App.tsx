@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { AccountDetail } from "./components/AccountDetail";
 import { AgyOverview, AgyQuota } from "./components/Agy";
 import { Agents } from "./components/Fleet";
+import { Home } from "./components/Home";
 import { Accounts } from "./components/Accounts";
 import { AddAccount } from "./components/AddAccount";
 import { Client } from "./components/Client";
@@ -37,8 +38,10 @@ export function Page({
   reload: () => void;
 }) {
   switch (route.view) {
+    case "home":
+      return <Home data={data} agy={agy} now={now} />;
     case "overview":
-      return <Overview data={data} agy={agy} now={now} reload={reload} />;
+      return <Overview data={data} now={now} reload={reload} />;
     case "clients":
       return <Clients data={data} now={now} />;
     case "client": {
@@ -78,6 +81,7 @@ export function Page({
 
 function crumbs(data: Dashboard | null, route: Route): ReactNode[] {
   const trail: ReactNode[] = [];
+  if (route.view === "home") return trail;
   if (rootOf(route) !== "Gateway") {
     trail.push(VIEW_NAMES[route.view]);
     return trail;
@@ -113,6 +117,7 @@ function crumbs(data: Dashboard | null, route: Route): ReactNode[] {
 
 /** The trail's first place: the page group the view is in. */
 function rootOf(route: Route): string {
+  if (route.view === "home") return "Home";
   if (route.view === "agy" || route.view === "agy-quota") return "Antigravity";
   if (route.view === "agents") return "Fleet";
   return "Gateway";

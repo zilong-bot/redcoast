@@ -387,11 +387,8 @@ th.n {
   border-radius: var(--t-radius-md);
   margin-bottom: var(--t-space-6);
 }
-.strip.four {
-  grid-template-columns: repeat(4, 1fr);
-}
-.strip.wide {
-  grid-template-columns: 1.8fr repeat(6, 1fr);
+.strip.three {
+  grid-template-columns: repeat(3, 1fr);
 }
 .strip > div {
   padding: var(--t-space-3) var(--t-space-4);
@@ -910,6 +907,9 @@ tbody tr.link {
   padding: var(--t-space-4) var(--t-space-2) var(--t-space-1);
   margin-top: var(--t-space-2);
   border-top: 1px solid var(--t-border-subtle);
+}
+.nav > a:first-child + .nav-section {
+  margin-top: var(--t-space-2);
 }
 .nav-section:first-child {
   margin-top: 0;
@@ -1578,4 +1578,72 @@ td.source {
   white-space: normal;
   overflow-wrap: anywhere;
   min-width: 12rem;
+}
+
+/* Home: the setup and both backends' quota in large cards, two a row. */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--t-space-4);
+  margin-bottom: var(--t-space-6);
+}
+.big-card {
+  border: 1px solid var(--t-border-subtle);
+  border-radius: var(--t-radius-md);
+  background: var(--t-chip);
+  padding: var(--t-space-4) var(--t-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-3);
+  min-width: 0;
+}
+.big-card .k {
+  color: var(--t-text-muted);
+  font-size: var(--t-text-sm);
+}
+.big-card .big {
+  font-family: var(--t-font-serif);
+  font-weight: var(--t-weight-serif);
+  font-size: var(--t-text-title);
+  line-height: 1.1;
+  color: var(--t-accent);
+}
+.big-card .card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.big-card .card-head .title {
+  font-family: var(--t-font-serif);
+  font-weight: var(--t-weight-serif);
+  font-size: var(--t-text-stat);
+}
+.big-card .quota-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--t-space-2);
+  padding-top: var(--t-space-2);
+  border-top: 1px solid var(--t-border-subtle);
+}
+.big-card .quota-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--t-space-2);
+}
+.big-card .quota-line {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: var(--t-space-2);
+}
+.big-card .win-label {
+  color: var(--t-text-muted);
+  font-size: var(--t-text-sm);
+  line-height: 1.6;
+}
+@media (max-width: 800px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
 }

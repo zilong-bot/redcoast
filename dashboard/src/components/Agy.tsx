@@ -10,7 +10,6 @@ import {
   agyPace,
   AGY_WINDOW_MS,
   runsOutAt,
-  runtimeName,
   tightest,
   used,
   usedPerHour,
@@ -36,7 +35,7 @@ function toneOf(u: number): Tone {
  * window as a hollow mark (as the Claude windows have), then the reset, the
  * pace and, at the last hour's rate, when it runs out.
  */
-function AgyMeter({
+export function AgyMeter({
   bucket,
   monitor,
   now,
@@ -151,12 +150,12 @@ function NotSetUp() {
   );
 }
 
-/** The four facts at the top of the AGY pages. */
+/** The three facts at the top of the Antigravity pages. */
 function AgyStrip({ m, now }: { m: AgyMonitor; now: Date }) {
   const t = tightest(m);
   const live = m.agents.filter((a) => a.kind === "agy" && a.state !== "ended");
   return (
-    <div className="strip four">
+    <div className="strip three">
       <div>
         <div className="k">Health</div>
         <div className="v">
@@ -173,11 +172,6 @@ function AgyStrip({ m, now }: { m: AgyMonitor; now: Date }) {
             m.health.detail
           )}
         </div>
-      </div>
-      <div>
-        <div className="k">Runtime</div>
-        <div className="v">{runtimeName(m.runtime)}</div>
-        <div className="reason">what new sessions start on</div>
       </div>
       <div>
         <div className="k">Antigravity agents</div>

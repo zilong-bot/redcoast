@@ -9,7 +9,8 @@ import {
 } from "./route";
 
 it("reads a view and its argument from the fragment, and back", () => {
-  expect(parseRoute("")).toEqual({ view: "overview" });
+  expect(parseRoute("")).toEqual({ view: "home" });
+  expect(parseRoute("#/overview")).toEqual({ view: "overview" });
   expect(parseRoute("#/monitor")).toEqual({ view: "monitor" });
   expect(parseRoute("#/sessions/machine%20a")).toEqual({
     view: "sessions",
@@ -20,8 +21,8 @@ it("reads a view and its argument from the fragment, and back", () => {
   );
 });
 
-it("opens an unknown or broken fragment on the overview", () => {
-  expect(parseRoute("#/nowhere")).toEqual({ view: "overview" });
+it("opens an unknown or broken fragment on the home page", () => {
+  expect(parseRoute("#/nowhere")).toEqual({ view: "home" });
   expect(parseRoute("#/sessions/%E0%A4%A")).toEqual({ view: "sessions" });
 });
 

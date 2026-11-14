@@ -2,6 +2,7 @@
 // every view opens directly and another provider's dashboard opens on the
 // same view when the fragment is carried over.
 export type View =
+  | "home"
   | "overview"
   | "clients"
   | "client"
@@ -26,6 +27,7 @@ export interface Route {
 }
 
 const VIEWS = new Set<string>([
+  "home",
   "overview",
   "clients",
   "client",
@@ -45,10 +47,10 @@ function isView(v: string): v is View {
   return VIEWS.has(v);
 }
 
-/** The route of a fragment; overview for one the page does not know. */
+/** The route of a fragment; home for one the page does not know. */
 export function parseRoute(hash: string): Route {
   const [view = "", ...rest] = hash.replace(/^#\/?/, "").split("/");
-  if (!isView(view)) return { view: "overview" };
+  if (!isView(view)) return { view: "home" };
   if (rest.length === 0 || rest.join("/") === "") return { view };
   try {
     return { view, arg: decodeURIComponent(rest.join("/")) };
@@ -91,6 +93,7 @@ export function providerHref(url: string, hash: string): string | null {
 }
 
 export const VIEW_NAMES: Record<View, string> = {
+  home: "Home",
   overview: "Overview",
   clients: "Clients",
   client: "Client",

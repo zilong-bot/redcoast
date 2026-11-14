@@ -24,13 +24,6 @@ import {
   hourTokens,
   tokenTotal,
 } from "../lib/stats";
-import {
-  agyHealth,
-  runtimeName,
-  tightest,
-  windowLabel,
-  type AgyMonitor,
-} from "../lib/agy";
 import type { Dashboard } from "../lib/types";
 import { cacheApart, providerName } from "../lib/words";
 import { AccountsTable, QuotaRefreshButton } from "./Accounts";
@@ -288,49 +281,15 @@ function Durations({
   );
 }
 
-/** The runtime and AGY tiles of the strip, when the gateway monitors AGY. */
-function AgyTiles({ agy }: { agy: AgyMonitor }) {
-  const t = tightest(agy);
-  return (
-    <>
-      <div>
-        <div className="k">Runtime</div>
-        <div className="v">{runtimeName(agy.runtime)}</div>
-        <div className="reason">new sessions start on it</div>
-      </div>
-      <div>
-        <div className="k">Antigravity</div>
-        <div className="v">
-          <Status state={agyHealth(agy)} />
-        </div>
-        <div className="reason">
-          {t === null ? null : (
-            <>
-              {formatPercent(t.bucket.remaining_fraction)} left,{" "}
-              {windowLabel(t.bucket.window)} ·{" "}
-            </>
-          )}
-          <a href={routeHref({ view: "agy" })} className="text-link">
-            View
-          </a>
-        </div>
-      </div>
-    </>
-  );
-}
-
 export function Overview({
   data,
-  agy = null,
   now,
   reload,
 }: {
   data: Dashboard;
-  agy?: AgyMonitor | null;
   now: Date;
   reload: () => void;
 }) {
-  const withAgy = agy?.configured === true ? agy : null;
   const g = data.gateway;
   const name = providerName(g.provider);
   const health = healthState(data);
@@ -357,7 +316,7 @@ export function Overview({
           </>
         }
       />
-      <div className={withAgy === null ? "strip" : "strip wide"}>
+      <div className="strip">
         <div>
           <div className="k">Health</div>
           <div className="v">
@@ -428,7 +387,6 @@ export function Overview({
             </a>
           </div>
         </div>
-        {withAgy === null ? null : <AgyTiles agy={withAgy} />}
       </div>
       <Section
         title="Requests and errors"
