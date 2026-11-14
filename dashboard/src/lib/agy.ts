@@ -204,22 +204,22 @@ export function used(b: AgyBucket): number {
 
 /**
  * How far through its window a bucket is, as the even pace's mark: the
- * window ends at its reset, so it began one window before. Null without a
- * reset in the future. by is the points used beyond an even pace.
+ * window ends at its reset, so it began one window before. by is the points
+ * used beyond an even pace. An unused limit's window has not started
+ * (Google starts it at the first use, so its reset stays a whole window
+ * away): its mark is at the start, idle. Null without a reset in the future.
  */
 export function agyPace(
   b: AgyBucket,
   now: Date,
-): { elapsed: number; by: number } | null {
+): { elapsed: number; by: number; idle: boolean } | null {
   const span = AGY_WINDOW_MS[b.window];
-  // An unused limit has no window yet: Google starts it at the first use, so
-  // its reset stays a whole window away.
-  if (span === undefined || b.reset_time === undefined || used(b) <= 0)
-    return null;
+  if (span === undefined || b.reset_time === undefined) return null;
+  if (used(b) <= 0) return { elapsed: 0, by: 0, idle: true };
   const left = Date.parse(b.reset_time) - now.getTime();
   if (left <= 0 || left > span) return null;
   const elapsed = 1 - left / span;
-  return { elapsed, by: Math.round((used(b) - elapsed) * 100) };
+  return { elapsed, by: Math.round((used(b) - elapsed) * 100), idle: false };
 }
 
 /** A bucket's used share at each reading, oldest first. */

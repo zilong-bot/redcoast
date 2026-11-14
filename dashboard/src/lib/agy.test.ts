@@ -78,8 +78,12 @@ describe("agyPace", () => {
     expect(
       agyPace(bucket({ reset_time: "2026-11-15T08:00:00Z" }), now),
     ).toBeNull();
-    // An unused limit's window has not started.
-    expect(agyPace(bucket({ remaining_fraction: 1 }), now)).toBeNull();
+    // An unused limit's window has not started: its mark sits at the start.
+    expect(agyPace(bucket({ remaining_fraction: 1 }), now)).toEqual({
+      elapsed: 0,
+      by: 0,
+      idle: true,
+    });
   });
 });
 

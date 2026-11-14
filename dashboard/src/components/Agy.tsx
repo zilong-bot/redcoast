@@ -56,7 +56,12 @@ export function AgyMeter({
           className="fill"
           style={{ width: `${String(Math.min(u, 1) * 100)}%` }}
         />
-        {p === null ? null : (
+        {p === null ? null : p.idle ? (
+          <div
+            className="even idle"
+            title="The window has not started: it starts at the first use"
+          />
+        ) : (
           <div
             className="even"
             // Kept inside the track, so a mark near either end does not
@@ -71,7 +76,9 @@ export function AgyMeter({
       <span className="pct">{formatPercent(u)}</span>
       <span className="when">
         <span>
-          {bucket.reset_time === undefined ? (
+          {p?.idle === true ? (
+            "nothing used yet"
+          ) : bucket.reset_time === undefined ? (
             "reset unknown"
           ) : (
             <Time iso={bucket.reset_time}>
@@ -79,7 +86,16 @@ export function AgyMeter({
             </Time>
           )}
         </span>
-        {p === null ? null : <PaceText by={p.by} />}
+        {p === null ? null : p.idle ? (
+          <span
+            className="pace"
+            title="Google starts the window at the first use"
+          >
+            Not started
+          </span>
+        ) : (
+          <PaceText by={p.by} />
+        )}
         {out === null ? null : (
           <span className="s-warn" title="At the rate of the last hour">
             runs out {formatUntil(out.toISOString(), now)}
